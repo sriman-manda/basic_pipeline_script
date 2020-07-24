@@ -1,0 +1,53 @@
+pipeline {
+    agent none
+    stages {
+	stage('Non-Parallel Stage') { 
+
+	agent{
+		label "master"
+	}	
+            steps {
+                echo "This stage in master will be executed first"; 
+            }
+        }
+        stage('Run Tests') { 
+	parallel {
+	stage('Test On Windows'){
+	agent {
+		label "Slave_Node"
+	}
+            steps {
+                echo "Task1 on Slave Agent"; 
+            }
+        }
+        stage('Test On Master'){
+	agent {
+		label "master"
+	}
+            steps {
+                echo "Task1 on Master"; 
+            }
+        }
+        }
+}
+    }
+post{
+
+always {
+echo 'this will always run'
+}
+success {
+echo 'this will run only on success'
+}
+failure {
+echo 'this will run only on failure'
+}
+unstable {
+echo 'this will run only if the run was unstable'
+}
+changed {
+echo 'this will run only if the state of pipeline has changed'
+}
+}
+
+}
